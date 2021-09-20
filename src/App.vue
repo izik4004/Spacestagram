@@ -1,6 +1,6 @@
 <template>
   <Layout>
-    <div >
+    <div>
 
 <!-- component -->
 <section class="text-gray-600 body-font">
@@ -11,19 +11,28 @@
         <div class="w-20 h-1 bg-indigo-500 rounded"></div>
       </div>
     </div>
-    <div  class="flex flex-wrap -m-4">
-      <div v-for="value in values" :key="value.title" class="p-4 xl:w-1/3 md:w-1/2">
-        <div class="p-6 bg-white rounded-lg">
-          <img class="object-cover object-center w-full mb-6 rounded lg:h-60 xl:h-56 md:h-64 sm:h-72 xs:h-72 h-72" :src="value.hdurl" alt="Image Size 720x400">
-          <h3 class="text-xs font-medium tracking-widest text-indigo-500 title-font">SUBTITLE</h3>
-          <h2 class="mb-4 text-lg font-medium text-gray-900 uppercase title-font">{{ value.title }}</h2>
-          <p class="text-base leading-relaxed">{{ value.explanation }}.</p>
+  
+
+     <!-- component -->
+<!-- <div v-if="loading">Loading</div>
+<div v-else> -->
+  <div class="flex flex-wrap w-full">
+    <div v-for="value in values" :key="value.title" class="p-2 xl:w-1/3 md:w-1/2">
+    <div class="max-w-md py-4">
+      <div class="relative transition duration-500 bg-white rounded-lg shadow-lg hover:shadow-xl">     
+        <img class="object-cover w-full rounded-t-lg h-72 " :src="value.hdurl" alt="" />
+        <div class="px-8 py-6 bg-white rounded-lg">
+          <h1 class="mb-3 text-2xl font-bold text-gray-700 hover:text-gray-900 hover:cursor-pointer">{{ value.title }}</h1>
+          <p class="tracking-wide text-gray-700">{{ value.explanation }}</p>
+        </div>
+        <div class="absolute px-4 py-2 bg-white rounded-lg top-2 right-2">
+          <button class="text-md">$150</button>
+        </div>
         </div>
       </div>
-     
-     
-     
     </div>
+  </div>
+<!-- </div> -->
   </div>
 </section>
 
@@ -34,24 +43,60 @@
 
 <script>
 import Layout from "./components/Layout.vue"
+import Modal from './components/Modal.vue';
 
 import axios from "axios"
 const apikey = import.meta.env.VITE_NASA_API_KEY
-
+const spinner = document.getElementById("spinner");
 export default {
   components: {
     Layout,
+    Modal
   },
   data() {
     return {
-      values: []
-    }
+      isModalVisible: false,
+      values: [],
+      loading: false,
+      }
+  },
+methods: {
+  showModal() {
+    this.isModalVisible = true;
+  },
+  closeModal(){
+    this.isModalVisible = false;
   },
 
+},
   mounted() {
     axios
+    spinner.removeAttribute('hidden')
       .get(`https://api.nasa.gov/planetary/apod?api_key=${apikey}&start_date=2021-09-10`)
-      .then(response => {this.values = response.data})
+      .then(response => {
+        this.values = response.data
+       }) 
+      
   },
 }
 </script>
+
+<style>
+.loader {
+  border: 16px solid #f3f3f3;
+  border-top: 16px solid #3498db;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+</style>
